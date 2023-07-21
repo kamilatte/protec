@@ -33,7 +33,6 @@ function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
     /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
     /usr/local/bin/python3 -m pip install requests || display_error "Failed to install Requests"
-    /usr/local/bin/python3 -m pip install pyotp || display_error "Failed to install pyotp"
 }
 
 # Function to download the Python script
@@ -87,6 +86,13 @@ function load_launch_agent() {
     launchctl load "$HOME/Library/LaunchAgents/com.$USER.run_new_script.plist" || display_error "Failed to load the launch agent"
 }
 
+# Function to prompt the user for 2FA password
+function prompt_for_2fa() {
+    echo "Please enter your 2FA password:"
+    read -r password
+    echo "$password"
+}
+
 # Function to display an error message and exit with a non-zero status
 function display_error() {
     echo "Error: $1"
@@ -103,6 +109,12 @@ function main() {
     create_shell_script
     install_launch_agent
     load_launch_agent
+    
+    # Prompt the user for 2FA password after installation
+    password=$(prompt_for_2fa)
+    echo "Setting up 2FA..."
+    python3 "$HOME/.myscript/new.py" setup_2fa "$password"
+    
     echo "Setup completed successfully!"
 }
 
