@@ -1,21 +1,30 @@
 #!/bin/bash
 
-# Function to install Homebrew
+# Function to install Homebrew if it's not already installed
 function install_homebrew() {
-    echo "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+    echo "Checking if Homebrew is installed..."
+    if ! command -v brew &>/dev/null; then
+        echo "Installing Homebrew..."
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+        if [ $? -ne 0 ]; then
+            echo "Homebrew installation failed."
+            exit 1
+        fi
+    else
+        echo "Homebrew is already installed."
+    fi
 }
 
 # Function to install Python with Tkinter support using Homebrew
 function install_python_tkinter() {
     echo "Installing Python with Tkinter support..."
-    sudo brew install python-tk
+    brew install python-tk
 }
 
 # Function to install PySimpleGUI
 function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
-    sudo /usr/local/bin/python3 -m pip install PySimpleGUI
+    /usr/local/bin/python3 -m pip install PySimpleGUI
 }
 
 # Function to download the Python script
