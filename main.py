@@ -5,70 +5,41 @@ import requests
 import PySimpleGUI as sg
 
 KEYCHAIN_SERVICE_NAME = "com.example.app_password"
+MAX_LOGIN_ATTEMPTS = 3  # Maximum number of login attempts allowed
+UPDATE_URL = "https://raw.githubusercontent.com/alwayshyper/protec/main/new.py"  # Replace with your GitHub URL
 
 def set_password(password):
-    try:
-        subprocess.run(["security", "add-generic-password", "-s", KEYCHAIN_SERVICE_NAME, "-a", "app_user", "-w", password])
-        return True
-    except subprocess.CalledProcessError:
-        return False
+    # ... (same as before)
 
 def get_expected_password():
-    layout = [
-        [sg.Text("Please enter the expected password:")],
-        [sg.Input(key="-PASSWORD-", password_char="*")],
-        [sg.Button("OK")]
-    ]
-
-    window = sg.Window("Password Setup", layout)
-
-    while True:
-        event, values = window.read()
-        if event == sg.WIN_CLOSED:
-            sys.exit()
-        elif event == "OK":
-            expected_password = values["-PASSWORD-"]
-            if set_password(expected_password):
-                sg.popup("Password set successfully!")
-            else:
-                sg.popup("Failed to set password.")
-            break
-
-    window.close()
+    # ... (same as before)
 
 def check_additional_password():
-    try:
-        result = subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE_NAME, "-a", "app_user", "-w"], capture_output=True, text=True)
-        expected_password = result.stdout.strip()
-    except subprocess.CalledProcessError:
-        sg.popup("Password not set. Please run the setup again.")
-        sys.exit()
-
-    additional_password = sg.popup_get_text("Enter additional password:", password_char="*")
-
-    if additional_password == expected_password:
-        sg.popup("Login successful!")
-        # Add your code to continue with the login process here
-    else:
-        sg.popup("Incorrect password. Login failed.")
+    # ... (same as before)
 
 def self_update():
-    url = "https://raw.githubusercontent.com/alwayshyper/protec/main/main.py"
-    response = requests.get(url)
-    if response.status_code == 200:
-        with open(sys.argv[0], "w") as f:
-            f.write(response.text)
-        sg.popup("App updated successfully. Please restart the app.")
-        sys.exit()
+    # ... (same as before)
+
+def login():
+    # ... (same as before)
 
 def main():
-    if not subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE_NAME, "-a", "app_user"], capture_output=True).returncode == 0:
+    if not subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE_NAME, "-a", "app_user"], capture_output=True, text=True).stdout.strip():
         get_expected_password()
 
-    check_additional_password()
+    login_successful = False
+    attempts = 0
 
-    # Check for updates on GitHub and self-update if needed
-    self_update()
+    while not login_successful and attempts < MAX_LOGIN_ATTEMPTS:
+        login_successful = check_additional_password()
+        attempts += 1
+
+    if login_successful:
+        # Check for updates and self-update (same as before)
+        # ...
+    else:
+        sg.popup("Incorrect password. Login failed.")
+        sys.exit()
 
 if __name__ == "__main__":
     main()
