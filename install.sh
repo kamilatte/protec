@@ -33,6 +33,7 @@ function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
     /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
     /usr/local/bin/python3 -m pip install requests || display_error "Failed to install Requests"
+    /usr/local/bin/python3 -m pip install pyotp || display_error "Failed to install pyotp"
 }
 
 # Function to download the Python script
