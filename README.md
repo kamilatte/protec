@@ -6,4 +6,4 @@
 
 - **Uninstallation**
 
-`curl -fsSL https://pastebin.com/raw/VmC7UXKZ | bash`
+```curl -fsSL https://pastebin.com/raw/VmC7UXKZ | bash```
