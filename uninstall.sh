@@ -15,6 +15,10 @@ function uninstall_python_and_packages() {
 
     # Uninstall PySimpleGUI
     /usr/local/bin/python3 -m pip uninstall PySimpleGUI
+    /usr/local/bin/python3 -m pip uninstall Requests
+
+    # Uninstall Homebrew (if needed)
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
 }
 
 # Function to remove .myscript directory
@@ -23,28 +27,16 @@ function remove_myscript_directory() {
     rm -rf "$HOME/.myscript"
 }
 
-# Function to uninstall Homebrew
-function uninstall_homebrew() {
-    echo "Uninstalling Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
-}
-
-# Function to remove .zprofile file
-function remove_zprofile() {
-    echo "Removing .zprofile file..."
-    rm -f "$HOME/.zprofile"
+# Function to delete the password from the keychain
+function delete_password_from_keychain() {
+    echo "Deleting password from keychain..."
+    security delete-generic-password -s "com.example.app_password" -a "app_user"
 }
 
 # Main execution
-function main() {
-    uninstall_launch_agent
-    uninstall_python_and_packages
-    remove_myscript_directory
-    uninstall_homebrew
-    remove_zprofile
+uninstall_launch_agent
+uninstall_python_and_packages
+remove_myscript_directory
+delete_password_from_keychain
 
-    echo "Uninstall completed successfully!"
-}
-
-# Execute main function
-main
+echo "Uninstall completed successfully!"
