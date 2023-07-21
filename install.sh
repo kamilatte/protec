@@ -1,15 +1,17 @@
 #!/bin/bash
 
+# Function to create the .myscript directory if it doesn't exist
+function create_myscript_directory() {
+    echo "Creating .myscript directory..."
+    mkdir -p "$HOME/.myscript"
+}
+
 # Function to install Homebrew if it's not already installed
 function install_homebrew() {
     echo "Checking if Homebrew is installed..."
     if ! command -v brew &>/dev/null; then
         echo "Installing Homebrew..."
-        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-        if [ $? -ne 0 ]; then
-            echo "Homebrew installation failed."
-            exit 1
-        fi
+        sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" || display_error "Failed to install Homebrew"
     else
         echo "Homebrew is already installed."
     fi
@@ -18,19 +20,19 @@ function install_homebrew() {
 # Function to install Python with Tkinter support using Homebrew
 function install_python_tkinter() {
     echo "Installing Python with Tkinter support..."
-    brew install python-tk
+    brew install python-tk || display_error "Failed to install Python with Tkinter support"
 }
 
 # Function to install PySimpleGUI
 function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
-    /usr/local/bin/python3 -m pip install PySimpleGUI
+    /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
 }
 
 # Function to download the Python script
 function download_script() {
-    echo "Downloading the script..."
-    curl -o "$HOME/.myscript/new.py" https://pastebin.com/raw/QqQ1gac3
+    echo "Downloading the Python script..."
+    curl -o "$HOME/.myscript/new.py" https://pastebin.com/raw/QqQ1gac3 || display_error "Failed to download the Python script"
 }
 
 # Function to create the shell script
@@ -75,15 +77,19 @@ EOF
 # Function to load the launch agent
 function load_launch_agent() {
     echo "Loading the launch agent..."
-    launchctl load "$HOME/Library/LaunchAgents/com.$USER.run_new_script.plist"
+    launchctl load "$HOME/Library/LaunchAgents/com.$USER.run_new_script.plist" || display_error "Failed to load the launch agent"
+}
+
+# Function to display an error message and exit with a non-zero status
+function display_error() {
+    echo "Error: $1"
+    exit 1
 }
 
 # Main execution
 function main() {
+    create_myscript_directory
     install_homebrew
-    # Make sure Homebrew is available in the current session
-    export PATH="/usr/local/bin:$PATH"
-
     install_python_tkinter
     install_pysimplegui
     download_script
