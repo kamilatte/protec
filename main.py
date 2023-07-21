@@ -1,4 +1,17 @@
+import os
+import sys
+import subprocess
+import requests
 import PySimpleGUI as sg
+
+KEYCHAIN_SERVICE_NAME = "com.example.app_password"
+
+def set_password(password):
+    try:
+        subprocess.run(["security", "add-generic-password", "-s", KEYCHAIN_SERVICE_NAME, "-a", "app_user", "-w", password])
+        return True
+    except subprocess.CalledProcessError:
+        return False
 
 def get_expected_password():
     layout = [
@@ -12,32 +25,50 @@ def get_expected_password():
     while True:
         event, values = window.read()
         if event == sg.WIN_CLOSED:
-            break
+            sys.exit()
         elif event == "OK":
             expected_password = values["-PASSWORD-"]
-            with open("expected_password.txt", "w") as password_file:
-                password_file.write(expected_password)
+            if set_password(expected_password):
+                sg.popup("Password set successfully!")
+            else:
+                sg.popup("Failed to set password.")
             break
 
     window.close()
 
 def check_additional_password():
-    with open("expected_password.txt", "r") as password_file:
-        expected_password = password_file.readline().strip()
+    try:
+        result = subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE_NAME, "-a", "app_user", "-w"], capture_output=True, text=True)
+        expected_password = result.stdout.strip()
+    except subprocess.CalledProcessError:
+        sg.popup("Password not set. Please run the setup again.")
+        sys.exit()
 
     additional_password = sg.popup_get_text("Enter additional password:", password_char="*")
 
     if additional_password == expected_password:
         sg.popup("Login successful!")
-        # Add your code to continue with the application functionality here
+        # Add your code to continue with the login process here
     else:
         sg.popup("Incorrect password. Login failed.")
 
+def self_update():
+    url = "https://raw.githubusercontent.com/your_username/your_repo/main/new.py"  # Replace with your GitHub URL
+    response = requests.get(url)
+    if response.status_code == 200:
+        with open(sys.argv[0], "w") as f:
+            f.write(response.text)
+        sg.popup("App updated successfully. Please restart the app.")
+        sys.exit()
+
 def main():
-    if not os.path.exists("expected_password.txt"):
+    if not subprocess.run(["security", "find-generic-password", "-s", KEYCHAIN_SERVICE_NAME, "-a", "app_user"], capture_output=True).returncode == 0:
         get_expected_password()
 
     check_additional_password()
+
+    # Check for updates on GitHub and self-update if needed
+    self_update()
 
 if __name__ == "__main__":
     main()
