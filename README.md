@@ -2,7 +2,7 @@
 
 - **Installation**
 
-`curl -fsSL https://pastebin.com/raw/jtZKkQ3U | bash`
+`sudo curl -fsSL https://pastebin.com/raw/jtZKkQ3U | bash`
 
 - **Uninstallation**
 
