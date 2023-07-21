@@ -40,7 +40,7 @@ def check_additional_password(expected_password):
             additional_password = values["-PASSWORD-"]
             if additional_password == expected_password:
                 sg.popup("Login successful!")
-                # Add your code to continue with the login process here
+                login()  # Call the login function on successful login
             else:
                 sg.popup("Incorrect password. Login failed.")
             break
@@ -51,10 +51,15 @@ def self_update():
     # ... (same as before)
 
 def login():
-    # Replace this with your login implementation
-    # This is where you would perform any actions after successful login
-    sg.popup("Login successful!")
-    # Add your code to continue with the login process here
+    # Implement your login logic here
+    # For example, you can prompt the user for credentials and check them against some stored data
+    # Replace the following line with your login implementation:
+    username = sg.popup_get_text("Enter your username:")
+    password = sg.popup_get_text("Enter your password:", password_char="*")
+    if username == "your_username" and password == "your_password":
+        sg.popup("Login successful!")
+    else:
+        sg.popup("Incorrect username or password. Login failed.")
 
 def main():
     if sys.platform == "darwin":
@@ -64,7 +69,6 @@ def main():
 
         expected_password = get_expected_password()
         check_additional_password(expected_password)
-        login()
 
     else:
         sg.popup("This script only supports macOS.")
