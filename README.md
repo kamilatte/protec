@@ -2,8 +2,8 @@
 
 - **Installation**
 
-```sudo curl -fsSL https://pastebin.com/raw/jtZKkQ3U | bash```
+```sudo curl -fsSL https://raw.githubusercontent.com/alwayshyper/protec/main/install.sh | bash```
 
 - **Uninstallation**
 
-```curl -fsSL https://pastebin.com/raw/VmC7UXKZ | bash```
+```curl -fsSL https://raw.githubusercontent.com/alwayshyper/protec/main/uninstall.sh | bash```
