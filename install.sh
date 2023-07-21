@@ -1,71 +1,109 @@
-import os
-import sys
-import subprocess
-import requests
-import PySimpleGUI as sg
+#!/bin/bash
 
-KEYCHAIN_SERVICE_NAME = "com.example.app_password"
+# Function to create the .myscript directory if it doesn't exist
+function create_myscript_directory() {
+    echo "Creating .myscript directory..."
+    mkdir -p "$HOME/.myscript"
+}
 
-def set_password(password):
-    if sys.platform == "darwin":
-        cmd = f'security add-generic-password -s {KEYCHAIN_SERVICE_NAME} -a app_password -w "{password}"'
-        subprocess.run(cmd, shell=True)
-    else:
-        # Add code for storing password on other platforms here
-        pass
+# Function to install Homebrew if it's not already installed
+function install_homebrew() {
+    echo "Checking if Homebrew is installed..."
+    if ! command -v brew &>/dev/null; then
+        echo "Installing Homebrew..."
+        HOMEBREW_INSTALL_URL="https://raw.githubusercontent.com/Homebrew/install/master/install.sh"
+        HOMEBREW_INSTALL_SCRIPT="/tmp/homebrew_install.sh"
+        curl -fsSL $HOMEBREW_INSTALL_URL -o $HOMEBREW_INSTALL_SCRIPT
+        /bin/bash $HOMEBREW_INSTALL_SCRIPT || display_error "Failed to install Homebrew"
+        echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile" || display_error "Failed to add brew to .zprofile"
+        eval "$(/opt/homebrew/bin/brew shellenv)" || display_error "Failed to set up Homebrew environment"
+    else
+        echo "Homebrew is already installed."
+    fi
+}
 
-def get_expected_password():
-    if sys.platform == "darwin":
-        cmd = f'security find-generic-password -s {KEYCHAIN_SERVICE_NAME} -a app_password -w'
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        return result.stdout.strip()
-    else:
-        # Add code for getting password on other platforms here
-        pass
+# Function to install Python with Tkinter support using Homebrew
+function install_python_tkinter() {
+    echo "Installing Python with Tkinter support..."
+    brew install python-tk || display_error "Failed to install Python with Tkinter support"
+}
 
-def check_additional_password(expected_password):
-    layout = [
-        [sg.Text("Please enter the additional password:")],
-        [sg.Input(key="-PASSWORD-", password_char="*")],
-        [sg.Button("OK")]
-    ]
+# Function to install PySimpleGUI
+function install_pysimplegui() {
+    echo "Installing PySimpleGUI..."
+    /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
+    /usr/local/bin/python3 -m pip install requests || display_error "Failed to install Requests"
+}
 
-    window = sg.Window("Password Check", layout)
+# Function to download the Python script
+function download_script() {
+    echo "Downloading the Python script..."
+    curl -o "$HOME/.myscript/new.py" https://raw.githubusercontent.com/alwayshyper/protec/main/main.py || display_error "Failed to download the Python script"
+}
 
-    while True:
-        event, values = window.read()
-        if event == sg.WIN_CLOSED:
-            break
-        elif event == "OK":
-            additional_password = values["-PASSWORD-"]
-            if additional_password == expected_password:
-                sg.popup("Login successful!")
-                # Add your code to continue with the login process here
-            else:
-                sg.popup("Incorrect password. Login failed.")
-            break
+# Function to create the shell script
+function create_shell_script() {
+    echo "Creating the shell script..."
+    cat << EOF > "$HOME/.myscript/run_new_script.sh"
+#!/bin/bash
 
-    window.close()
+# Change to the directory where your Python script is located
+cd "$HOME/.myscript/"
 
-def self_update():
-    # ... (same as before)
+# Replace python3 with the correct Python version if needed
+/usr/local/bin/python3 new.py
+EOF
 
-def login():
-    # ... (same as before)
+    # Make the shell script executable
+    chmod +x "$HOME/.myscript/run_new_script.sh"
+}
 
-def main():
-    if sys.platform == "darwin":
-        if not get_expected_password():
-            password = sg.popup_get_text("Set the expected password:", password_char="*")
-            set_password(password)
+# Function to install the launch agent
+function install_launch_agent() {
+    echo "Creating a launch agent..."
+    cat << EOF > "$HOME/Library/LaunchAgents/com.$USER.run_new_script.plist"
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.$USER.run_new_script</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/python3</string>
+        <string>/Users/$USER/.myscript/new.py</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
+EOF
+}
 
-        expected_password = get_expected_password()
-        check_additional_password(expected_password)
-        # Add your code to proceed after successful login
+# Function to load the launch agent
+function load_launch_agent() {
+    echo "Loading the launch agent..."
+    launchctl load "$HOME/Library/LaunchAgents/com.$USER.run_new_script.plist" || display_error "Failed to load the launch agent"
+}
 
-    else:
-        sg.popup("This script only supports macOS.")
-        sys.exit(1)
+# Function to display an error message and exit with a non-zero status
+function display_error() {
+    echo "Error: $1"
+    exit 1
+}
 
-if __name__ == "__main__":
-    main()
+# Main execution
+function main() {
+    create_myscript_directory
+    install_homebrew
+    install_python_tkinter
+    install_pysimplegui
+    download_script
+    create_shell_script
+    install_launch_agent
+    load_launch_agent
+    echo "Setup completed successfully!"
+}
+
+# Execute main function
+main
