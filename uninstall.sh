@@ -11,7 +11,7 @@ function uninstall_launch_agent() {
 function uninstall_python_and_packages() {
     echo "Uninstalling Python and related packages..."
     # Uninstall Python
-    brew uninstall python
+    brew uninstall python-tk
 
     # Uninstall PySimpleGUI
     /usr/local/bin/python3 -m pip uninstall PySimpleGUI
