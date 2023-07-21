@@ -8,7 +8,7 @@ KEYCHAIN_SERVICE_NAME = "com.example.app_password"
 
 def set_password(password):
     if sys.platform == "darwin":
-        cmd = f'security add-generic-password -s {KEYCHAIN_SERVICE_NAME} -a app_password -w "{password}"'
+        cmd = f'security add-generic-password -s {KEYCHAIN_SERVICE_NAME} -a app_user -w "{password}"'
         subprocess.run(cmd, shell=True)
     else:
         # Add code for storing password on other platforms here
@@ -16,7 +16,7 @@ def set_password(password):
 
 def get_expected_password():
     if sys.platform == "darwin":
-        cmd = f'security find-generic-password -s {KEYCHAIN_SERVICE_NAME} -a app_password -w'
+        cmd = f'security find-generic-password -s {KEYCHAIN_SERVICE_NAME} -a app_user -w'
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         return result.stdout.strip()
     else:
