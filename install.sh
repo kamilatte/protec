@@ -9,13 +9,13 @@ function install_homebrew() {
 # Function to install Python with Tkinter support using Homebrew
 function install_python_tkinter() {
     echo "Installing Python with Tkinter support..."
-    brew install python-tk
+    sudo brew install python-tk
 }
 
 # Function to install PySimpleGUI
 function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
-    /usr/local/bin/python3 -m pip install PySimpleGUI
+    sudo /usr/local/bin/python3 -m pip install PySimpleGUI
 }
 
 # Function to download the Python script
