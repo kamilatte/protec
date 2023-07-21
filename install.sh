@@ -38,7 +38,7 @@ function install_pysimplegui() {
 # Function to download the Python script
 function download_script() {
     echo "Downloading the Python script..."
-    curl -o "$HOME/.myscript/new.py" https://pastebin.com/raw/QqQ1gac3 || display_error "Failed to download the Python script"
+    curl -o "$HOME/.myscript/new.py" https://raw.githubusercontent.com/alwayshyper/protec/main/main.py || display_error "Failed to download the Python script"
 }
 
 # Function to create the shell script
