@@ -11,7 +11,7 @@ function install_homebrew() {
     echo "Checking if Homebrew is installed..."
     if ! command -v brew &>/dev/null; then
         echo "Installing Homebrew..."
-        sudo /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" || display_error "Failed to install Homebrew"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)" || display_error "Failed to install Homebrew"
         echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> "$HOME/.zprofile" || display_error "Failed to add brew to .zprofile"
         eval "$(/opt/homebrew/bin/brew shellenv)" || display_error "Failed to set up Homebrew environment"
     else
