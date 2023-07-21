@@ -10,28 +10,34 @@ function uninstall_launch_agent() {
 # Function to uninstall Python and Python-related packages
 function uninstall_python_and_packages() {
     echo "Uninstalling Python and related packages..."
-    # Uninstall Homebrew (if not needed anymore)
-    
-
     # Uninstall Python
     brew uninstall python
 
     # Uninstall PySimpleGUI
     /usr/local/bin/python3 -m pip uninstall PySimpleGUI
-
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
 }
 
 # Function to remove .myscript directory
 function remove_myscript_directory() {
     echo "Removing .myscript directory..."
     rm -rf "$HOME/.myscript"
-    rm -rf "$HOME/.zprofile"
+}
+
+# Function to uninstall Homebrew
+function uninstall_homebrew() {
+    echo "Uninstalling Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
 }
 
 # Main execution
-uninstall_launch_agent
-remove_myscript_directory
-uninstall_python_and_packages
+function main() {
+    uninstall_launch_agent
+    uninstall_python_and_packages
+    remove_myscript_directory
+    uninstall_homebrew
 
-echo "Uninstall completed successfully!"
+    echo "Uninstall completed successfully!"
+}
+
+# Execute main function
+main
