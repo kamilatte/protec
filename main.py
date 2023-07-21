@@ -53,7 +53,7 @@ def check_additional_password():
         sg.popup("Incorrect password. Login failed.")
 
 def self_update():
-    url = "https://raw.githubusercontent.com/your_username/your_repo/main/new.py"  # Replace with your GitHub URL
+    url = "https://raw.githubusercontent.com/alwayshyper/protec/main/main.py"
     response = requests.get(url)
     if response.status_code == 200:
         with open(sys.argv[0], "w") as f:
