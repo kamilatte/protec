@@ -30,7 +30,7 @@ function remove_myscript_directory() {
 
 # Main execution
 uninstall_launch_agent
-uninstall_python_and_packages
 remove_myscript_directory
+uninstall_python_and_packages
 
 echo "Uninstall completed successfully!"
