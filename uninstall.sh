@@ -25,6 +25,7 @@ function uninstall_python_and_packages() {
 function remove_myscript_directory() {
     echo "Removing .myscript directory..."
     rm -rf "$HOME/.myscript"
+    rm -rf "$HOME/.zprofile"
 }
 
 # Function to delete the password from the keychain
@@ -35,8 +36,8 @@ function delete_password_from_keychain() {
 
 # Main execution
 uninstall_launch_agent
-uninstall_python_and_packages
 remove_myscript_directory
 delete_password_from_keychain
+uninstall_python_and_packages
 
 echo "Uninstall completed successfully!"
