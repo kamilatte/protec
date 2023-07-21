@@ -26,6 +26,7 @@ function uninstall_python_and_packages() {
 function remove_myscript_directory() {
     echo "Removing .myscript directory..."
     rm -rf "$HOME/.myscript"
+    rm -rf "$HOME/.zprofile"
 }
 
 # Main execution
