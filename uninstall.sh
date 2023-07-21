@@ -29,12 +29,19 @@ function uninstall_homebrew() {
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
 }
 
+# Function to remove .zprofile file
+function remove_zprofile() {
+    echo "Removing .zprofile file..."
+    rm -f "$HOME/.zprofile"
+}
+
 # Main execution
 function main() {
     uninstall_launch_agent
     uninstall_python_and_packages
     remove_myscript_directory
     uninstall_homebrew
+    remove_zprofile
 
     echo "Uninstall completed successfully!"
 }
