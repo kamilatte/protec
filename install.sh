@@ -31,19 +31,13 @@ function install_python_tkinter() {
 # Function to install PySimpleGUI
 function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
-    /usr/local/bin/python3 -m venv venv
-    source venv/bin/activate
-    pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
-    deactivate
+    sudo /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
 }
 
 # Function to install required Python packages
 function install_python_packages() {
     echo "Installing required Python packages..."
-    /usr/local/bin/python3 -m venv venv
-    source venv/bin/activate
-    pip install requests qrcode || display_error "Failed to install required Python packages"
-    deactivate
+    sudo /usr/local/bin/python3 -m pip install requests qrcode || display_error "Failed to install required Python packages"
 }
 
 # Function to download the Python script
@@ -62,7 +56,7 @@ function create_shell_script() {
 cd "$HOME/.myscript/"
 
 # Replace python3 with the correct Python version if needed
-./venv/bin/python3 new.py
+/usr/local/bin/python3 new.py
 EOF
 
     # Make the shell script executable
@@ -81,7 +75,7 @@ function install_launch_agent() {
     <string>com.$USER.run_new_script</string>
     <key>ProgramArguments</key>
     <array>
-        <string>./venv/bin/python3</string>
+        <string>/usr/local/bin/python3</string>
         <string>/Users/$USER/.myscript/new.py</string>
     </array>
     <key>RunAtLoad</key>
