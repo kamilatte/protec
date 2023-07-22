@@ -16,6 +16,7 @@ function uninstall_python_and_packages() {
     # Uninstall PySimpleGUI
     /usr/local/bin/python3 -m pip uninstall PySimpleGUI
     /usr/local/bin/python3 -m pip uninstall Requests
+    /usr/local/bin/python3 -m pip uninstall qrcode
 
     # Uninstall Homebrew (if needed)
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh)"
