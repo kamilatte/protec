@@ -32,8 +32,12 @@ function install_python_tkinter() {
 function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
     /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
-    /usr/local/bin/python3 -m pip install requests || display_error "Failed to install Requests"
-    /usr/local/bin/python3 -m pip install qrcode || display_error "Failed to install QRcode"
+}
+
+# Function to install required Python packages
+function install_python_packages() {
+    echo "Installing required Python packages..."
+    /usr/local/bin/python3 -m pip install requests qrcode || display_error "Failed to install required Python packages"
 }
 
 # Function to download the Python script
@@ -106,6 +110,7 @@ function main() {
     install_homebrew
     install_python_tkinter
     install_pysimplegui
+    install_python_packages
     download_script
     create_shell_script
     install_launch_agent
