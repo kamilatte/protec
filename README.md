@@ -7,4 +7,3 @@
 - **Uninstallation**
 
 ```curl -fsSL https://raw.githubusercontent.com/alwayshyper/protec/main/uninstall.sh | bash```
-gdgf
