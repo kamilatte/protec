@@ -45,7 +45,9 @@ function install_python_packages() {
     /usr/local/bin/python3 -m pip install --upgrade pip || display_error "Failed to upgrade pip"
 
     # Install other required packages
-    /usr/local/bin/python3 -m pip install --user PySimpleGUI qrcode pyotp requests || display_error "Failed to install required Python packages"
+    /usr/local/bin/python3 -m pip install PySimpleGUI qrcode pyotp requests || display_error "Failed to install required Python packages"
+    /usr/local/bin/python3 -m pip install pyotp | display_error "Failed to install pyotp"
+
 }
 
 # Function to download the Python script
