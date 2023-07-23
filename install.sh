@@ -28,6 +28,14 @@ function install_python_tkinter() {
     echo "Installing Python with Tkinter support..."
     brew install python-tk || display_error "Failed to install Python with Tkinter support"
 }
+
+# Function to install get-pip.py
+function install_get_pip() {
+    echo "Installing get-pip.py..."
+    curl -fsSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py || display_error "Failed to download get-pip.py"
+    /usr/local/bin/python3 /tmp/get-pip.py || display_error "Failed to install pip using get-pip.py"
+}
+
 # Function to install PySimpleGUI and required packages
 function install_python_packages() {
     echo "Installing PySimpleGUI and required packages..."
@@ -123,6 +131,7 @@ function main() {
     create_myscript_directory
     install_homebrew
     install_python_tkinter
+    install_get_pip
     install_python_packages
     download_script
     create_shell_script
