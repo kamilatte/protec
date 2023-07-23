@@ -40,7 +40,7 @@ function uninstall_get_pip() {
 # Function to uninstall PySimpleGUI and required packages
 function uninstall_python_packages() {
     echo "Uninstalling PySimpleGUI and required packages..."
-    /usr/local/bin/python3 -m pip uninstall PySimpleGUI qrcode requests -y
+    /usr/local/bin/python3 -m pip uninstall PySimpleGUI qrcode requests pyotp -y
 }
 
 # Function to uninstall Homebrew
