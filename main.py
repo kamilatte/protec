@@ -5,6 +5,7 @@ import requests
 import PySimpleGUI as sg
 import qrcode
 import pyotp
+import io
 
 KEYCHAIN_SERVICE_NAME = "com.example.app_password"
 
@@ -29,9 +30,14 @@ def generate_qr_code(key):
     return qr
 
 def show_qr_code(qr):
+    # Convert the QR code image to bytes
+    byte_stream = io.BytesIO()
+    qr.save(byte_stream, format='PNG')
+    byte_stream.seek(0)
+
     layout = [
         [sg.Text("Scan the QR code with your 2FA app:")],
-        [sg.Image(data=qr.tobytes())],
+        [sg.Image(data=byte_stream.read())],
         [sg.Button("OK")]
     ]
 
