@@ -34,6 +34,7 @@ function install_get_pip() {
     echo "Installing get-pip.py..."
     curl -fsSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py || display_error "Failed to download get-pip.py"
     /usr/local/bin/python3 /tmp/get-pip.py || display_error "Failed to install pip using get-pip.py"
+    export PATH="/Library/Frameworks/Python.framework/Versions/3.11/bin:$PATH"
 }
 
 # Function to install PySimpleGUI and required packages
