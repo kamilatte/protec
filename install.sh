@@ -29,7 +29,7 @@ function install_python_tkinter() {
     brew install python-tk || display_error "Failed to install Python with Tkinter support"
 }
 # Function to install PySimpleGUI and required packages
-function install_pysimplegui() {
+function install_python_packages() {
     echo "Installing PySimpleGUI and required packages..."
     /usr/local/bin/python3 -m pip install --upgrade pip || display_error "Failed to upgrade pip"
     /usr/local/bin/python3 -m pip install --user PySimpleGUI requests qrcode || display_error "Failed to install required Python packages"
