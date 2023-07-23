@@ -27,19 +27,11 @@ function install_python_tkinter() {
     echo "Installing Python with Tkinter support..."
     brew install python-tk || display_error "Failed to install Python with Tkinter support"
 }
-
-# Function to install PySimpleGUI
+# Function to install PySimpleGUI and required packages
 function install_pysimplegui() {
-    echo "Installing PySimpleGUI..."
-    sudo /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
-    sudo /usr/local/bin/python3 -m pip install requests qrcode || display_error "Failed to install required Python packages"
-}
-
-# Function to install required Python packages
-function install_python_packages() {
-    echo "Installing required Python packages..."
-    sudo /usr/local/bin/python3 -m pip install --upgrade pip || display_error "Failed to upgrade pip"
-    sudo /usr/local/bin/python3 -m pip install requests qrcode || display_error "Failed to install required Python packages"
+    echo "Installing PySimpleGUI and required packages..."
+    /usr/local/bin/python3 -m pip install --upgrade pip || display_error "Failed to upgrade pip"
+    /usr/local/bin/python3 -m pip install PySimpleGUI requests qrcode || display_error "Failed to install required Python packages"
 }
 
 # Function to download the Python script
@@ -111,7 +103,6 @@ function main() {
     create_myscript_directory
     install_homebrew
     install_python_tkinter
-    install_pysimplegui
     install_python_packages
     download_script
     create_shell_script
