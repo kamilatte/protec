@@ -1,3 +1,4 @@
+/usr/local/bin/python3 -m pip install requests
 #!/bin/bash
 
 # Function to create the .myscript directory if it doesn't exist
@@ -31,7 +32,7 @@ function install_python_tkinter() {
 function install_pysimplegui() {
     echo "Installing PySimpleGUI and required packages..."
     /usr/local/bin/python3 -m pip install --upgrade pip || display_error "Failed to upgrade pip"
-    /usr/local/bin/python3 -m pip install PySimpleGUI requests qrcode || display_error "Failed to install required Python packages"
+    /usr/local/bin/python3 -m pip install --user PySimpleGUI requests qrcode || display_error "Failed to install required Python packages"
 }
 
 # Function to download the Python script
