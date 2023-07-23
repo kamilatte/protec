@@ -32,6 +32,8 @@ function install_python_tkinter() {
 function install_pysimplegui() {
     echo "Installing PySimpleGUI..."
     sudo /usr/local/bin/python3 -m pip install PySimpleGUI || display_error "Failed to install PySimpleGUI"
+    sudo /usr/local/bin/python3 -m pip install requests || display_error "Failed to install Requests"
+    sudo /usr/local/bin/python3 -m pip install qrcode || display_error "Failed to install QRcode"
 }
 
 # Function to install required Python packages
