@@ -1,91 +1,60 @@
-import os
-import sys
-import subprocess
-import requests
-import PySimpleGUI as sg
-import qrcode
-import pyotp
 import io
+import pyotp
+import qrcode
+from PIL import Image
+import PySimpleGUI as sg
 
-KEYCHAIN_SERVICE_NAME = "com.example.app_password"
-
-def set_2fa_key(key):
-    if sys.platform == "darwin":
-        cmd = f'security add-generic-password -s {KEYCHAIN_SERVICE_NAME} -a 2fa_key -w "{key}"'
-        subprocess.run(cmd, shell=True)
-
-def get_2fa_key():
-    if sys.platform == "darwin":
-        cmd = f'security find-generic-password -s {KEYCHAIN_SERVICE_NAME} -a 2fa_key -w'
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
-        return result.stdout.strip()
-
-def create_2fa_key():
+def generate_otp_secret():
+    # Generate a random OTP secret
     return pyotp.random_base32()
 
-def generate_qr_code(key):
-    totp = pyotp.TOTP(key)
-    url = totp.provisioning_uri(name="Example User", issuer_name="Example App")
-    qr = qrcode.make(url)
-    return qr
-
-def show_qr_code(qr):
-    # Convert the QR code image to bytes
-    byte_stream = io.BytesIO()
-    qr.save(byte_stream, format='PNG')
-    byte_stream.seek(0)
-
-    layout = [
-        [sg.Text("Scan the QR code with your 2FA app:")],
-        [sg.Image(data=byte_stream.read())],
-        [sg.Button("OK")]
-    ]
-
-    window = sg.Window("2FA Setup", layout, finalize=True)
-
-    while True:
-        event, _ = window.read()
-        if event == sg.WIN_CLOSED or event == "OK":
-            window.close()
-            break
+def generate_otp_uri(account_name, otp_secret):
+    return f'otpauth://totp/{account_name}?secret={otp_secret}&issuer=MyApp'
 
 def setup_2fa():
-    key = create_2fa_key()
-    set_2fa_key(key)
-    qr_code = generate_qr_code(key)
-    show_qr_code(qr_code)
-
-def login():
-    sg.theme("DarkGrey3")
+    # Create a simple GUI to set up 2FA
     layout = [
-        [sg.Text("Enter 6-digit 2FA code:")],
-        [sg.Input(key="-2FA-", size=(10, 1))],
-        [sg.Button("Login")]
+        [sg.Text("Account Name:"), sg.Input(key='-ACCOUNT_NAME-')],
+        [sg.Button("Generate OTP Secret"), sg.Button("Generate QR Code"), sg.Button("Exit")],
+        [sg.Image(key='-IMAGE-')],
     ]
 
-    window = sg.Window("2FA Login", layout, finalize=True)
-    window.Maximize()
+    window = sg.Window("2FA Setup", layout)
 
+    otp_secret = None
     while True:
         event, values = window.read()
-        if event == sg.WIN_CLOSED:
-            sys.exit(0)
-        elif event == "Login":
-            expected_key = get_2fa_key()
-            user_input = values["-2FA-"]
-            totp = pyotp.TOTP(expected_key)
-            if totp.verify(user_input):
-                window.close()
-                return True
-            else:
-                sg.popup("Invalid 2FA code. Please try again.")
+        if event == sg.WINDOW_CLOSED or event == "Exit":
+            break
+        elif event == "Generate OTP Secret":
+            otp_secret = generate_otp_secret()
+            sg.popup(f"Generated OTP Secret:\n{otp_secret}", title="OTP Secret")
+        elif event == "Generate QR Code" and otp_secret:
+            account_name = values['-ACCOUNT_NAME-']
+            otp_uri = generate_otp_uri(account_name, otp_secret)
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(otp_uri)
+            qr.make(fit=True)
+
+            byte_stream = show_qr_code(qr)
+            window['-IMAGE-'].update(data=byte_stream.getvalue())
+
+    window.close()
+
+def show_qr_code(qr):
+    byte_stream = io.BytesIO()
+    image = qr.make_image(fill_color="black", back_color="white")
+    image.save(byte_stream, format='PNG')
+    byte_stream.seek(0)
+    return byte_stream
 
 def main():
-    sg.popup("Welcome! Click OK to set up 2FA.")
     setup_2fa()
-    if login():
-        sg.popup("2FA Login successful!")
-        # Add your code to proceed after successful login
 
 if __name__ == "__main__":
     main()
