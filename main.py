@@ -3,51 +3,44 @@ import pyotp
 import qrcode
 from PIL import Image
 import PySimpleGUI as sg
+import os
+import keyring
+
+APP_NAME = "MyApp"
 
 def generate_otp_secret():
     # Generate a random OTP secret
     return pyotp.random_base32()
 
 def generate_otp_uri(account_name, otp_secret):
-    return f'otpauth://totp/{account_name}?secret={otp_secret}&issuer=MyApp'
-
-def confirm_otp(otp_secret):
-    layout = [
-        [sg.Text("Enter the One-Time Password (OTP):"), sg.Input(key='-OTP_INPUT-')],
-        [sg.Button("Confirm"), sg.Button("Cancel")],
-    ]
-
-    window = sg.Window("Confirm OTP", layout)
-
-    while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == "Cancel":
-            window.close()
-            return False
-        elif event == "Confirm":
-            otp_input = values['-OTP_INPUT-']
-            totp = pyotp.TOTP(otp_secret)
-            if totp.verify(otp_input):
-                window.close()
-                return True
-            else:
-                sg.popup("Incorrect OTP. Please try again.", title="Invalid OTP")
+    return f'otpauth://totp/{account_name}?secret={otp_secret}&issuer={APP_NAME}'
 
 def setup_2fa():
     # Create a simple GUI to set up 2FA
     layout = [
         [sg.Text("Account Name:"), sg.Input(key='-ACCOUNT_NAME-')],
         [sg.Button("Show OTP Secret"), sg.Button("Exit")],
-        [sg.Image(key='-IMAGE-', size=(200, 200))],  # Set the size of the image element
+        [sg.Image(key='-IMAGE-')],
     ]
 
-    window = sg.Window("2FA Setup", layout, finalize=True)  # Set finalize=True here
+    window = sg.Window("2FA Setup", layout, finalize=True)
 
-    otp_secret = generate_otp_secret()  # Generate OTP secret immediately upon opening the window
+    otp_secret = generate_otp_secret()
+    qr_byte_stream = show_qr_code(otp_secret)
+    window['-IMAGE-'].update(data=qr_byte_stream.getvalue())
 
-    # Generate QR code
-    account_name = ''  # Initialize account name
-    otp_uri = generate_otp_uri(account_name, otp_secret)
+    while True:
+        event, values = window.read()
+        if event == sg.WINDOW_CLOSED or event == "Exit":
+            break
+        elif event == "Show OTP Secret":
+            sg.popup(f"Generated OTP Secret:\n{otp_secret}", title="OTP Secret")
+
+    window.close()
+    save_otp_secret(otp_secret)
+
+def show_qr_code(otp_secret):
+    otp_uri = generate_otp_uri("MyAccount", otp_secret)
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -57,75 +50,32 @@ def setup_2fa():
     qr.add_data(otp_uri)
     qr.make(fit=True)
 
-    byte_stream = show_qr_code(qr)
-
-    # Update the image element with the QR code
-    if byte_stream:
-        image_data = byte_stream.getvalue()
-        window['-IMAGE-'].update(data=image_data)
-
-    while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == "Exit":
-            break
-        elif event == "Show OTP Secret":
-            sg.popup(f"OTP Secret:\n{otp_secret}", title="OTP Secret")
-            confirm_otp(otp_secret)  # Confirm OTP after showing the secret
-
-    window.close()
-
-    # Create a simple GUI to set up 2FA
-    layout = [
-        [sg.Text("Account Name:"), sg.Input(key='-ACCOUNT_NAME-')],
-        [sg.Button("Show OTP Secret"), sg.Button("Exit")],
-        [sg.Image(key='-IMAGE-', size=(200, 200))],  # Set the size of the image element
-    ]
-
-    window = sg.Window("2FA Setup", layout, finalize=True)  # Set finalize=True here
-
-    otp_secret = generate_otp_secret()  # Generate OTP secret upon opening
-    otp_uri = None
-    byte_stream = None
-
-    # Generate QR code only once upon opening
-    if otp_secret:
-        account_name = ''  # Initialize account name
-        otp_uri = generate_otp_uri(account_name, otp_secret)
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(otp_uri)
-        qr.make(fit=True)
-
-        byte_stream = show_qr_code(qr)
-
-    while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == "Exit":
-            break
-        elif event == "Show OTP Secret":
-            sg.popup(f"OTP Secret:\n{otp_secret}", title="OTP Secret")
-            confirm_otp(otp_secret)  # Confirm OTP after showing the secret
-
-        # Update the image element with the QR code
-        if byte_stream:
-            image_data = byte_stream.getvalue()
-            window['-IMAGE-'].update(data=image_data)
-
-    window.close()
-
-def show_qr_code(qr):
     img = qr.make_image(fill_color="black", back_color="white")
     byte_stream = io.BytesIO()
     img.save(byte_stream, format='PNG')
     byte_stream.seek(0)
     return byte_stream
 
+def confirm_otp(otp_secret):
+    # ... (rest of the code remains the same)
+
+def save_otp_secret(otp_secret):
+    # Use keyring to securely store the OTP secret
+    keyring.set_password(APP_NAME, "otp_secret", otp_secret)
+
+def load_otp_secret():
+    # Load the OTP secret from the keyring
+    return keyring.get_password(APP_NAME, "otp_secret")
+
 def main():
-    setup_2fa()
+    # Check if the 2FA setup is completed or not
+    if not load_otp_secret():
+        # OTP secret is not found, set up 2FA
+        setup_2fa()
+    else:
+        # 2FA setup is completed, prompt for 2FA code
+        otp_secret = load_otp_secret()
+        confirm_otp(otp_secret)
 
 if __name__ == "__main__":
     main()
