@@ -1,4 +1,3 @@
-/usr/local/bin/python3 -m pip install requests
 #!/bin/bash
 
 # Function to create the .myscript directory if it doesn't exist
@@ -45,9 +44,7 @@ function install_python_packages() {
     /usr/local/bin/python3 -m pip install --upgrade pip || display_error "Failed to upgrade pip"
 
     # Install other required packages
-    /usr/local/bin/python3 -m pip install PySimpleGUI qrcode requests
-    /usr/local/bin/python3 -m pip install pyotp
-     /usr/local/bin/python3 -m pip install pillow
+    /usr/local/bin/python3 -m pip install PySimpleGUI qrcode requests pyotp pillow || display_error "Failed to install required Python packages"
 }
 
 # Function to download the Python script
