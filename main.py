@@ -16,10 +16,13 @@ def generate_otp_uri(account_name, otp_secret):
     return f'otpauth://totp/{account_name}?secret={otp_secret}&issuer={APP_NAME}'
 
 def setup_2fa():
+    # Create a modern theme for the GUI
+    sg.theme('Dark Blue 3')
+
     # Create a simple GUI to set up 2FA
     layout = [
         [sg.Text("Account Name:"), sg.Input(key='-ACCOUNT_NAME-')],
-        [sg.Button("Show OTP Secret"), sg.Button("Exit")],
+        [sg.Button("Show OTP Secret"), sg.Button("Next"), sg.Button("Exit")],
         [sg.Image(key='-IMAGE-')],
     ]
 
@@ -35,6 +38,31 @@ def setup_2fa():
             break
         elif event == "Show OTP Secret":
             sg.popup(f"Generated OTP Secret:\n{otp_secret}", title="OTP Secret")
+        elif event == "Next":
+            account_name = values['-ACCOUNT_NAME-']
+            otp_uri = generate_otp_uri(account_name, otp_secret)
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(otp_uri)
+            qr.make(fit=True)
+
+            byte_stream = show_qr_code(otp_secret)
+            window['-IMAGE-'].update(data=byte_stream.getvalue())
+
+            # Auto-focus the first input field
+            window['-OTP-1-'].SetFocus()
+
+            # Enable event handling to move focus to the next input field
+            for i in range(1, 7):
+                window['-OTP-{}-'.format(i)].expand(expand_x=True, expand_y=True)
+                window['-OTP-{}-'.format(i)].bind("<Tab>", f"{i + 1}.1")
+                window['-OTP-{}-'.format(i)].bind("<BackSpace>", f"{i - 1}.1")
+            window['-OTP-6-'].bind("<Tab>", "1.1")
+            window['-OTP-1-'].bind("<BackSpace>", "6.1")
 
     window.close()
     save_otp_secret(otp_secret)
@@ -57,63 +85,8 @@ def show_qr_code(otp_secret):
     return byte_stream
 
 def confirm_otp(otp_secret):
-    # Create a simple GUI for 2FA confirmation
-    layout = [
-        [sg.Text("Enter 6-Digit Verification Code:")],
-        [sg.Input(size=(1, 1), key='-OTP-1-', justification='center', enable_events=True),
-         sg.Input(size=(1, 1), key='-OTP-2-', justification='center', enable_events=True),
-         sg.Input(size=(1, 1), key='-OTP-3-', justification='center', enable_events=True),
-         sg.Input(size=(1, 1), key='-OTP-4-', justification='center', enable_events=True),
-         sg.Input(size=(1, 1), key='-OTP-5-', justification='center', enable_events=True),
-         sg.Input(size=(1, 1), key='-OTP-6-', justification='center', enable_events=True),
-         ],
-        [sg.Button("Verify"), sg.Button("Resend OTP"), sg.Button("Exit")],
-    ]
-
-    window = sg.Window("2FA Verification", layout)
-
-    while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == "Exit":
-            window.close()
-            break
-        elif event == "Resend OTP":
-            # Code to resend the OTP (you can implement this function)
-            # For demonstration purposes, we'll simply print a message
-            print("OTP Resent")
-        elif event == "Verify":
-            otp_digits = [values[f'-OTP-{i}-'] for i in range(1, 7)]
-            otp_code = "".join(otp_digits)
-
-            # Verify the OTP code (you can implement this function)
-            # For demonstration purposes, we'll simply print the code
-            print("OTP Code:", otp_code)
-
-    window.close()
-
-    # Create a simple GUI to prompt for the OTP
-    layout = [
-        [sg.Text("Enter One-Time Password:"), sg.Input(key='-OTP-')],
-        [sg.Button("Verify OTP"), sg.Button("Exit")],
-    ]
-
-    window = sg.Window("2FA Verification", layout)
-
-    while True:
-        event, values = window.read()
-        if event == sg.WINDOW_CLOSED or event == "Exit":
-            break
-        elif event == "Verify OTP":
-            entered_otp = values['-OTP-']
-            totp = pyotp.TOTP(otp_secret)
-            if totp.verify(entered_otp):
-                sg.popup("OTP Verification Successful!", title="Success")
-                window.close()
-                break
-            else:
-                sg.popup("Invalid OTP! Please try again.", title="Error")
-
-    window.close()
+    # Add the code for confirming OTP here
+    pass
 
 def save_otp_secret(otp_secret):
     # Use keyring to securely store the OTP secret
