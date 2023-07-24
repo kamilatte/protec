@@ -44,22 +44,7 @@ def setup_2fa():
     window = sg.Window("2FA Setup", layout)
 
     otp_secret = generate_otp_secret()  # Generate OTP secret upon opening
-
-    # Automatically generate the QR code upon showing the OTP secret
-    if otp_secret:
-        account_name = ""  # Initialize with an empty account name
-        otp_uri = generate_otp_uri(account_name, otp_secret)
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(otp_uri)
-        qr.make(fit=True)
-
-        byte_stream = show_qr_code(qr)
-        window['-IMAGE-'].update(data=byte_stream.getvalue())
+    otp_uri = None
 
     while True:
         event, values = window.read()
@@ -68,6 +53,22 @@ def setup_2fa():
         elif event == "Show OTP Secret":
             sg.popup(f"OTP Secret:\n{otp_secret}", title="OTP Secret")
             confirm_otp(otp_secret)  # Confirm OTP after showing the secret
+
+        # Generate QR code only once after the OTP secret is generated
+        if otp_secret and not otp_uri:
+            account_name = values['-ACCOUNT_NAME-']  # Get the account name from the input field
+            otp_uri = generate_otp_uri(account_name, otp_secret)
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=10,
+                border=4,
+            )
+            qr.add_data(otp_uri)
+            qr.make(fit=True)
+
+            byte_stream = show_qr_code(qr)
+            window['-IMAGE-'].update(data=byte_stream.getvalue())
 
     window.close()
 
