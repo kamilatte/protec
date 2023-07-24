@@ -47,9 +47,9 @@ def setup_2fa():
     window.close()
 
 def show_qr_code(qr):
+    img = qr.make_image(fill_color="black", back_color="white")
     byte_stream = io.BytesIO()
-    image = qr.make_image(fill_color="black", back_color="white")
-    image.save(byte_stream, format='PNG')
+    img.save(byte_stream, format='PNG')
     byte_stream.seek(0)
     return byte_stream
 
