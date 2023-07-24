@@ -57,6 +57,40 @@ def show_qr_code(otp_secret):
     return byte_stream
 
 def confirm_otp(otp_secret):
+    # Create a simple GUI for 2FA confirmation
+    layout = [
+        [sg.Text("Enter 6-Digit Verification Code:")],
+        [sg.Input(size=(1, 1), key='-OTP-1-', justification='center', enable_events=True),
+         sg.Input(size=(1, 1), key='-OTP-2-', justification='center', enable_events=True),
+         sg.Input(size=(1, 1), key='-OTP-3-', justification='center', enable_events=True),
+         sg.Input(size=(1, 1), key='-OTP-4-', justification='center', enable_events=True),
+         sg.Input(size=(1, 1), key='-OTP-5-', justification='center', enable_events=True),
+         sg.Input(size=(1, 1), key='-OTP-6-', justification='center', enable_events=True),
+         ],
+        [sg.Button("Verify"), sg.Button("Resend OTP"), sg.Button("Exit")],
+    ]
+
+    window = sg.Window("2FA Verification", layout)
+
+    while True:
+        event, values = window.read()
+        if event == sg.WINDOW_CLOSED or event == "Exit":
+            window.close()
+            break
+        elif event == "Resend OTP":
+            # Code to resend the OTP (you can implement this function)
+            # For demonstration purposes, we'll simply print a message
+            print("OTP Resent")
+        elif event == "Verify":
+            otp_digits = [values[f'-OTP-{i}-'] for i in range(1, 7)]
+            otp_code = "".join(otp_digits)
+
+            # Verify the OTP code (you can implement this function)
+            # For demonstration purposes, we'll simply print the code
+            print("OTP Code:", otp_code)
+
+    window.close()
+
     # Create a simple GUI to prompt for the OTP
     layout = [
         [sg.Text("Enter One-Time Password:"), sg.Input(key='-OTP-')],
