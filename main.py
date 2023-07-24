@@ -37,7 +37,7 @@ def setup_2fa():
     # Create a simple GUI to set up 2FA
     layout = [
         [sg.Text("Account Name:"), sg.Input(key='-ACCOUNT_NAME-')],
-        [sg.Button("Generate OTP Secret"), sg.Button("Generate QR Code"), sg.Button("Exit")],
+        [sg.Button("Generate OTP Secret"), sg.Button("Generate QR Code"), sg.Button("Confirm"), sg.Button("Exit")],
         [sg.Image(key='-IMAGE-')],
     ]
 
@@ -65,7 +65,6 @@ def setup_2fa():
 
             byte_stream = show_qr_code(qr)
             window['-IMAGE-'].update(data=byte_stream.getvalue())
-
         elif event == "Confirm" and otp_secret:
             if confirm_otp(otp_secret):
                 sg.popup("2FA Setup Completed Successfully!", title="Success")
