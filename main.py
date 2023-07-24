@@ -41,7 +41,7 @@ def setup_2fa():
         [sg.Image(key='-IMAGE-', size=(200, 200))],  # Set the size of the image element
     ]
 
-    window = sg.Window("2FA Setup", layout)
+    window = sg.Window("2FA Setup", layout, finalize=True)  # Set finalize=True here
 
     otp_secret = generate_otp_secret()  # Generate OTP secret upon opening
     otp_uri = None
@@ -62,11 +62,6 @@ def setup_2fa():
 
         byte_stream = show_qr_code(qr)
 
-    # Update the image element with the QR code
-    if byte_stream:
-        image_data = byte_stream.getvalue()
-        window['-IMAGE-'].update(data=image_data)
-
     while True:
         event, values = window.read()
         if event == sg.WINDOW_CLOSED or event == "Exit":
@@ -74,6 +69,11 @@ def setup_2fa():
         elif event == "Show OTP Secret":
             sg.popup(f"OTP Secret:\n{otp_secret}", title="OTP Secret")
             confirm_otp(otp_secret)  # Confirm OTP after showing the secret
+
+        # Update the image element with the QR code
+        if byte_stream:
+            image_data = byte_stream.getvalue()
+            window['-IMAGE-'].update(data=image_data)
 
     window.close()
 
