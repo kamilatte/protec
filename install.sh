@@ -46,8 +46,8 @@ function install_python_packages() {
 
     # Install other required packages
     /usr/local/bin/python3 -m pip install PySimpleGUI qrcode pyotp pillow requests || display_error "Failed to install required Python packages"
-    /usr/local/bin/python3 -m pip install pyotp pillow | display_error "Failed to install pyotp"
-
+    /usr/local/bin/python3 -m pip install pyotp | display_error "Failed to install pyotp"
+     /usr/local/bin/python3 -m pip install pillow | display_error "Failed to install pillow"
 }
 
 # Function to download the Python script
