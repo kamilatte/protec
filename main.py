@@ -11,6 +11,28 @@ def generate_otp_secret():
 def generate_otp_uri(account_name, otp_secret):
     return f'otpauth://totp/{account_name}?secret={otp_secret}&issuer=MyApp'
 
+def confirm_otp(otp_secret):
+    layout = [
+        [sg.Text("Enter the One-Time Password (OTP):"), sg.Input(key='-OTP_INPUT-')],
+        [sg.Button("Confirm"), sg.Button("Cancel")],
+    ]
+
+    window = sg.Window("Confirm OTP", layout)
+
+    while True:
+        event, values = window.read()
+        if event == sg.WINDOW_CLOSED or event == "Cancel":
+            window.close()
+            return False
+        elif event == "Confirm":
+            otp_input = values['-OTP_INPUT-']
+            totp = pyotp.TOTP(otp_secret)
+            if totp.verify(otp_input):
+                window.close()
+                return True
+            else:
+                sg.popup("Incorrect OTP. Please try again.", title="Invalid OTP")
+
 def setup_2fa():
     # Create a simple GUI to set up 2FA
     layout = [
@@ -43,6 +65,12 @@ def setup_2fa():
 
             byte_stream = show_qr_code(qr)
             window['-IMAGE-'].update(data=byte_stream.getvalue())
+
+        elif event == "Confirm" and otp_secret:
+            if confirm_otp(otp_secret):
+                sg.popup("2FA Setup Completed Successfully!", title="Success")
+            else:
+                sg.popup("2FA Setup Canceled.", title="Canceled")
 
     window.close()
 
