@@ -37,22 +37,21 @@ def setup_2fa():
     # Create a simple GUI to set up 2FA
     layout = [
         [sg.Text("Account Name:"), sg.Input(key='-ACCOUNT_NAME-')],
-        [sg.Button("Generate OTP Secret"), sg.Button("Exit")],
+        [sg.Button("Show OTP Secret"), sg.Button("Exit")],
         [sg.Image(key='-IMAGE-')],
     ]
 
     window = sg.Window("2FA Setup", layout)
 
-    otp_secret = None
+    otp_secret = generate_otp_secret()  # Generate OTP secret upon opening
     while True:
         event, values = window.read()
         if event == sg.WINDOW_CLOSED or event == "Exit":
             break
-        elif event == "Generate OTP Secret":
-            otp_secret = generate_otp_secret()
-            sg.popup(f"Generated OTP Secret:\n{otp_secret}", title="OTP Secret")
+        elif event == "Show OTP Secret":
+            sg.popup(f"OTP Secret:\n{otp_secret}", title="OTP Secret")
             
-            # Automatically generate the QR code upon entering the OTP secret
+            # Automatically generate the QR code upon showing the OTP secret
             if otp_secret:
                 account_name = values['-ACCOUNT_NAME-']
                 otp_uri = generate_otp_uri(account_name, otp_secret)
@@ -67,7 +66,7 @@ def setup_2fa():
 
                 byte_stream = show_qr_code(qr)
                 window['-IMAGE-'].update(data=byte_stream.getvalue())
-                confirm_otp(otp_secret)  # Confirm OTP after QR code is generated
+                confirm_otp(otp_secret)  # Confirm OTP after QR code is shown
             
     window.close()
 
