@@ -57,7 +57,29 @@ def show_qr_code(otp_secret):
     return byte_stream
 
 def confirm_otp(otp_secret):
-    # ... (rest of the code remains the same)
+    # Create a simple GUI to prompt for the OTP
+    layout = [
+        [sg.Text("Enter One-Time Password:"), sg.Input(key='-OTP-')],
+        [sg.Button("Verify OTP"), sg.Button("Exit")],
+    ]
+
+    window = sg.Window("2FA Verification", layout)
+
+    while True:
+        event, values = window.read()
+        if event == sg.WINDOW_CLOSED or event == "Exit":
+            break
+        elif event == "Verify OTP":
+            entered_otp = values['-OTP-']
+            totp = pyotp.TOTP(otp_secret)
+            if totp.verify(entered_otp):
+                sg.popup("OTP Verification Successful!", title="Success")
+                window.close()
+                break
+            else:
+                sg.popup("Invalid OTP! Please try again.", title="Error")
+
+    window.close()
 
 def save_otp_secret(otp_secret):
     # Use keyring to securely store the OTP secret
