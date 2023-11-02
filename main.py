@@ -9,17 +9,14 @@ import keyring
 APP_NAME = "MyApp"
 
 def generate_otp_secret():
-    # Generate a random OTP secret
     return pyotp.random_base32()
 
 def generate_otp_uri(account_name, otp_secret):
     return f'otpauth://totp/{account_name}?secret={otp_secret}&issuer={APP_NAME}'
 
 def setup_2fa():
-    # Create a modern theme for the GUI
     sg.theme('Dark Blue 3')
 
-    # Create a simple GUI to set up 2FA
     layout = [
         [sg.Text("Account Name:"), sg.Input(key='-ACCOUNT_NAME-')],
         [sg.Button("Show OTP Secret"), sg.Button("Next"), sg.Button("Exit")],
@@ -53,10 +50,9 @@ def setup_2fa():
             byte_stream = show_qr_code(otp_secret)
             window['-IMAGE-'].update(data=byte_stream.getvalue())
 
-            # Auto-focus the first input field
+
             window['-OTP-1-'].SetFocus()
 
-            # Enable event handling to move focus to the next input field
             for i in range(1, 7):
                 window['-OTP-{}-'.format(i)].expand(expand_x=True, expand_y=True)
                 window['-OTP-{}-'.format(i)].bind("<Tab>", f"{i + 1}.1")
@@ -85,24 +81,19 @@ def show_qr_code(otp_secret):
     return byte_stream
 
 def confirm_otp(otp_secret):
-    # Add the code for confirming OTP here
+    # Otp confirm plz :)
     pass
 
 def save_otp_secret(otp_secret):
-    # Use keyring to securely store the OTP secret
     keyring.set_password(APP_NAME, "otp_secret", otp_secret)
 
 def load_otp_secret():
-    # Load the OTP secret from the keyring
     return keyring.get_password(APP_NAME, "otp_secret")
 
 def main():
-    # Check if the 2FA setup is completed or not
     if not load_otp_secret():
-        # OTP secret is not found, set up 2FA
         setup_2fa()
     else:
-        # 2FA setup is completed, prompt for 2FA code
         otp_secret = load_otp_secret()
         confirm_otp(otp_secret)
 
