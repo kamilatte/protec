@@ -113,5 +113,5 @@ function main() {
     echo "Setup completed successfully!"
 }
 
-# Я устал:/
+# Tired af:/
 main
